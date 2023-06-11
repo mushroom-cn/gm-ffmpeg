@@ -1,15 +1,16 @@
+import { IConverter } from '@base';
 import { Inject, Injectable } from '@nestjs/common';
 import { Media } from '../entities';
 import { ActorConverter } from './actor.converter';
 import { MediaDto } from './media.dto';
 import { TagConverter } from './tag.converter';
 @Injectable()
-export class MediaConverter {
+export class MediaConverter implements IConverter<MediaDto, Media> {
   constructor(
     @Inject(TagConverter)
     private tagConverter: TagConverter,
     @Inject(ActorConverter)
-    private actorConverter: ActorConverter,
+    private actorConverter: ActorConverter
   ) {}
 
   toDto = (medias: Media[] = []) => {

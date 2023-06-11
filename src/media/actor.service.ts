@@ -1,8 +1,8 @@
+import { BaseService, IConverter } from '@base';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BaseService } from './base.service';
-import { ActorConverter, ActorDto, IConverter } from './dto';
+import { ActorConverter, ActorDto } from './dto';
 import { Actor } from './entities';
 import { TagService } from './tag.service';
 
@@ -14,7 +14,7 @@ export class ActorService extends BaseService<ActorDto, Actor> {
     @Inject(ActorConverter)
     protected converter: IConverter<ActorDto, Actor>,
     @InjectRepository(Actor)
-    protected repo: Repository<Actor>,
+    protected repo: Repository<Actor>
   ) {
     super();
   }

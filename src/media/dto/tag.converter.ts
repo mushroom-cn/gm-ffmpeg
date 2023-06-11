@@ -1,8 +1,9 @@
+import { IConverter } from '@base';
 import { Injectable } from '@nestjs/common';
 import { Tag } from '../entities';
 import { TagDto } from './tag.dto';
 @Injectable()
-export class TagConverter {
+export class TagConverter implements IConverter<TagDto, Tag> {
   toDto = (tags: Tag[] = []) => {
     return tags.filter(Boolean).map((tag) => {
       const dto = new TagDto();

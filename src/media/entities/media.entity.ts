@@ -1,26 +1,15 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Base } from '@base';
+import { Column, Entity, Index, JoinTable, ManyToMany } from 'typeorm';
 import { Actor } from './actor.entity';
 import { Tag } from './tag.entity';
 
+export enum MediaStatus {
+  Loading = '0',
+  Creating = '20',
+  Done = '100',
+}
 @Entity({ name: 'Media' })
-export class Media {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'varchar', length: 255 })
-  @Index()
-  name: string;
-
+export class Media extends Base {
   @Column({ type: 'text', readonly: true, unique: true })
   @Index()
   path: string;
@@ -29,26 +18,11 @@ export class Media {
   @Index()
   target: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  @Index()
-  description: string;
-
   @Column({ type: 'varchar', length: 50, readonly: true })
   mediaType: string;
 
   // @Column({ type: 'blob' })
   // coverImg: Blob;
-
-  @CreateDateColumn({
-    readonly: true,
-  })
-  createDate: Date;
-
-  @UpdateDateColumn()
-  modifyDate: Date;
-
-  @DeleteDateColumn({ nullable: true })
-  deleteDate: Date;
 
   @Column({ type: 'integer', readonly: true })
   size: number;
@@ -73,4 +47,7 @@ export class Media {
   })
   @JoinTable()
   tags: Tag[];
+
+  @Column({ type: 'text' })
+  status: string;
 }

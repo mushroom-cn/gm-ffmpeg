@@ -4,7 +4,7 @@ import { stringify } from 'json5';
 import { reject } from 'lodash';
 import { newFfmpeg } from './newFfmpeg';
 export async function queryMetaAsync(
-  source: string[],
+  source: string[]
 ): Promise<Ffmpeg.FfprobeFormat[]> {
   const command = newFfmpeg(source);
   return await Promise.allSettled(
@@ -20,7 +20,7 @@ export async function queryMetaAsync(
               resolve(format);
             }
           });
-        }),
-    ),
+        })
+    )
   ).then((v) => v.map((t) => (t as any).value));
 }

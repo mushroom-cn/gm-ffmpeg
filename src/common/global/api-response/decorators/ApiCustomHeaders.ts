@@ -9,6 +9,6 @@ export const ApiCustomHeaders = () => {
         name: 'lang',
         enum: LocaleLang,
       },
-    ]),
+    ])
   );
 };

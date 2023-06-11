@@ -1,0 +1,9 @@
+{
+    "$schema": "./node_modules/@compodoc/compodoc/src/config/schema.json",
+    "name": "gm-ffmpeg",
+    "tsconfig": "./tsconfig.json",
+    "hideGenerator": true,
+    "theme": "gitbook",
+    "serve": true,
+    "language": "zh-CN"
+}

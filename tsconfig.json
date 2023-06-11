@@ -6,6 +6,7 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "strict": true,
     "allowSyntheticDefaultImports": true,
     "target": "ESNext",
     "sourceMap": true,
@@ -18,13 +19,15 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
+    "moduleResolution": "Node",
     "paths": {
       "@common": ["src/common"],
       "@db": ["src/db"],
       "@media": ["src/media"],
       "@i18n": ["src/i18n"],
+      "@base": ["src/base"]
     }
   },
-  "include": ["src", "types", "test"],
+  "include": ["src/**/*", "types/**/*", "test/**/*"],
   "exclude": ["dist", "node_modules"]
 }

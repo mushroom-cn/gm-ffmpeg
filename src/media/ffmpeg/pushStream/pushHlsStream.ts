@@ -1,19 +1,18 @@
-import { basename, extname } from 'path';
 import { pushStream } from './pushStream';
 
 const EXT = 'm3u8';
 export function pushHlsStream({
   path,
   serverUrl,
+  onProcessing,
 }: {
   path: string;
   serverUrl: string;
+  onProcessing?: (process: number) => void;
 }) {
-  const outputUrl = [serverUrl, `${basename(path, extname(path))}.${EXT}`].join(
-    '/',
-  );
+  const outputUrl = [serverUrl, EXT].join('.');
   // ffmpeg -i /Users/andersonyli/Downloads/abc.mp4 -c:v libx264 -hls_time 120 -hls_list_size 0 -c:a aac -strict -2 -f hls rtmp://localhost:1935/rtmplive/home
-  return pushStream({ path, outputOptions: useHls(), outputUrl });
+  return pushStream({ path, outputOptions: useHls(), outputUrl, onProcessing });
 }
 
 function useHls() {

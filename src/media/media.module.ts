@@ -1,3 +1,4 @@
+import { BaseModule } from '@base';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ActorController } from './actor.controller';
@@ -13,7 +14,7 @@ import { TagController } from './tag.controller';
 import { TagService } from './tag.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature(ENTITIES)],
+  imports: [TypeOrmModule.forFeature(ENTITIES), BaseModule],
   providers: [
     MediaService,
     TagService,

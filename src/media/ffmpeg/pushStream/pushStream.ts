@@ -5,10 +5,12 @@ export function pushStream({
   path,
   outputUrl,
   outputOptions,
+  onProcessing,
 }: {
   path: string;
   outputUrl: string;
   outputOptions: string[];
+  onProcessing?: (process: number) => void;
 }) {
   outputOptions.push('-threads');
   outputOptions.push('4');
@@ -17,11 +19,11 @@ export function pushStream({
   outputOptions.push('veryslow');
 
   return new Promise<void>((resolve) => {
-    newFfmpeg([path])
+    newFfmpeg([path], onProcessing)
       .output(outputUrl)
       .outputOptions(outputOptions)
       .on('end', () => {
-        logger.info(`finished playing.`);
+        logger.log('finished playing.');
         resolve(undefined);
       })
       .run();

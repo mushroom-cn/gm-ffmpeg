@@ -30,7 +30,7 @@ export class DataResult<T> extends BaseResult {
     data: T[],
     totalCount: number,
     status = HttpStatus.OK,
-    error?: Gm7Error,
+    error?: Gm7Error
   ) {
     super(status, error);
     this.data = data;

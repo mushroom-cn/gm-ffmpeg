@@ -1,4 +1,11 @@
-import { ApiGm7Response, parseIntArrarPipe, parseIntPipe } from '@common';
+import {
+  ApiGm7Response,
+  BooleanQuery,
+  DEFAULT_PAGE_QUERY,
+  PageQuery,
+  parseIntArrarPipe,
+  parseIntPipe,
+} from '@common';
 import {
   Body,
   Controller,
@@ -11,12 +18,16 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { MediaDto } from './dto';
+import { FileScanner } from './fileScanner.service';
 import { MediaService } from './media.service';
 
 @Controller('/media')
 @ApiTags('media')
 export class MediaController {
-  constructor(private readonly mediaService: MediaService) {}
+  constructor(
+    private readonly mediaService: MediaService,
+    private fileScanner: FileScanner
+  ) {}
 
   @Post()
   @ApiBody({
@@ -48,11 +59,34 @@ export class MediaController {
   }
 
   @Delete()
+  @ApiQuery({ type: Number, name: 'ids' })
+  @ApiQuery({ type: Boolean, required: false, name: 'force' })
+  async delete(
+    @Query('ids', parseIntArrarPipe) id: number[],
+    @BooleanQuery('force', false)
+    force: boolean
+  ) {
+    if (!force) {
+      return this.mediaService.softDelete(id);
+    }
+    const [entries] = await this.mediaService.findById({ ids: id });
+    if (!entries?.length) {
+      return;
+    }
+    await this.mediaService.delete(id);
+    this.fileScanner.rm(entries[0].target);
+  }
+
+  @Put('/restore')
   @Header('Cache-Control', 'none')
   @ApiQuery({ type: Number, name: 'ids' })
   @ApiGm7Response(MediaDto)
-  delete(@Query('ids', parseIntArrarPipe) id: number[]) {
-    return this.mediaService.delete(id);
+  async restore(@Query('ids', parseIntArrarPipe) id: number[]) {
+    const media = await this.mediaService.restore(id);
+    if (media?.raw?.[0]?.target) {
+      this.fileScanner.rm(media.raw[0].target);
+    }
+    return media;
   }
 
   @Get('/list')
@@ -71,21 +105,21 @@ export class MediaController {
   @Header('Cache-Control', 'none')
   @ApiGm7Response(MediaDto)
   async list(
-    @Query('page', parseIntPipe) page: string,
-    @Query('pageSize', parseIntPipe) pageSize: string,
+    @PageQuery('page', DEFAULT_PAGE_QUERY.page) page: number,
+    @PageQuery('pageSize', DEFAULT_PAGE_QUERY.pageSize)
+    pageSize: number
   ) {
     // 返回索引列表
     return this.mediaService.find({
-      page: parseInt(page),
-      pageSize: parseInt(pageSize),
+      page,
+      pageSize,
     });
   }
 
   @Get('/reindex')
   @ApiOkResponse({ type: [MediaDto], isArray: true })
   reindex() {
-    // 重建索引
-    return;
+    this.fileScanner.scann();
   }
 
   @Put('/tag/bind')
@@ -94,7 +128,7 @@ export class MediaController {
   @ApiGm7Response(MediaDto)
   async tagBind(
     @Query('mediaId', parseIntPipe) mediaId: number,
-    @Query('tagIds', parseIntArrarPipe) tagIds: number[],
+    @Query('tagIds', parseIntArrarPipe) tagIds: number[]
   ) {
     return [await this.mediaService.addTag(mediaId, tagIds)];
   }
@@ -104,7 +138,7 @@ export class MediaController {
   @ApiQuery({ type: Number, name: 'tagIds', isArray: true, required: true })
   async tagUnbind(
     @Query('mediaId', parseIntPipe) mediaId: number,
-    @Query('tagIds', parseIntArrarPipe) tagIds: number[],
+    @Query('tagIds', parseIntArrarPipe) tagIds: number[]
   ) {
     return [await this.mediaService.removeTag(mediaId, tagIds)];
   }
@@ -114,7 +148,7 @@ export class MediaController {
   @ApiQuery({ type: Number, name: 'actorIds', isArray: true, required: true })
   actorBind(
     @Query('mediaId', parseIntPipe) mediaId: number,
-    @Query('actorIds', parseIntArrarPipe) tagIds: number[],
+    @Query('actorIds', parseIntArrarPipe) tagIds: number[]
   ) {
     return this.mediaService.addActor(mediaId, tagIds);
   }
@@ -124,7 +158,7 @@ export class MediaController {
   @ApiQuery({ type: Number, name: 'actorIds', isArray: true, required: true })
   actorUnbind(
     @Query('mediaId', parseIntPipe) mediaId: number,
-    @Query('actorIds', parseIntArrarPipe) actorIds: number[],
+    @Query('actorIds', parseIntArrarPipe) actorIds: number[]
   ) {
     return this.mediaService.removeActor(mediaId, actorIds);
   }

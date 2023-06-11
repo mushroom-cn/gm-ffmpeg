@@ -1,13 +1,12 @@
+import { IConverter } from '@base';
 import { Inject, Injectable } from '@nestjs/common';
 import { Actor } from '../entities/';
 import { ActorDto } from './actor.dto';
 import { TagConverter } from './tag.converter';
 @Injectable()
-export class ActorConverter {
-  constructor(
-    @Inject(TagConverter)
-    private tagConverter: TagConverter,
-  ) {}
+export class ActorConverter implements IConverter<ActorDto, Actor> {
+  constructor(@Inject(TagConverter) private tagConverter: TagConverter) {}
+
   toDto = (actors: Actor[] = []) => {
     return actors.filter(Boolean).map((actor) => {
       const dto = new ActorDto();

@@ -1,42 +1,11 @@
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Base } from '@base';
+import { Entity, JoinTable, ManyToMany } from 'typeorm';
 import { Tag } from './tag.entity';
 
 @Entity()
-export class Actor {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: 'varchar', length: 255 })
-  @Index()
-  name: string;
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  @Index()
-  description: string;
-
+export class Actor extends Base {
   // @Column({ type: 'blob' })
   // avator: Blob;
-
-  @CreateDateColumn({
-    readonly: true,
-  })
-  createDate: Date;
-
-  @UpdateDateColumn()
-  modifyDate: Date;
-
-  @DeleteDateColumn({ nullable: true })
-  deleteDate: Date;
 
   @ManyToMany(() => Tag, (tag) => tag.id, {
     eager: true,

@@ -32,7 +32,7 @@ export class ResultTransformInterceptor implements NestInterceptor {
           default:
             return data;
         }
-      }),
+      })
     );
   }
 }

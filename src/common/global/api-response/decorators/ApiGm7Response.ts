@@ -6,6 +6,6 @@ import { getDataResultSchema } from './utils';
 export const ApiGm7Response = <T1 extends Type<any>>(t1: T1) => {
   return applyDecorators(
     ApiOkResponse(getDataResultSchema(t1)),
-    ...getDefaultApiResponseDecorators(),
+    ...getDefaultApiResponseDecorators()
   );
 };

@@ -18,6 +18,6 @@ export const ApiUpdateResponse = <T1 extends Type<any>>(t1: T1) => {
           },
         ],
       },
-    }),
+    })
   );
 };

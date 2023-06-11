@@ -18,6 +18,6 @@ export const ApiDeleteResponse = <T1 extends Type<any>>(t1: T1) => {
           },
         ],
       },
-    }),
+    })
   );
 };

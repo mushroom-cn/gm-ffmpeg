@@ -1,7 +1,9 @@
 import {
   ApiGm7Response,
+  BooleanQuery,
   DEFAULT_PAGE_QUERY,
   DataResult,
+  PageQuery,
   parseIntArrarPipe,
   parseIntPipe,
 } from '@common';
@@ -48,8 +50,15 @@ export class ActorController {
 
   @Delete()
   @ApiQuery({ type: Number, isArray: true, required: true, name: 'ids' })
-  delete(@Query('ids', parseIntArrarPipe) ids: number[]) {
-    return this.actorService.delete(ids);
+  @ApiQuery({ type: Boolean, required: false, name: 'force' })
+  delete(
+    @Query('ids', parseIntArrarPipe) ids: number[],
+    @BooleanQuery('force', false) force: boolean
+  ) {
+    if (force) {
+      return this.actorService.delete(ids);
+    }
+    return this.actorService.softDelete(ids);
   }
 
   @Get('/list')
@@ -68,8 +77,10 @@ export class ActorController {
   })
   @ApiGm7Response(ActorDto)
   list(
-    @Query('page', parseIntPipe) page = DEFAULT_PAGE_QUERY.page,
-    @Query('pageSize', parseIntPipe) pageSize = DEFAULT_PAGE_QUERY.pageSize,
+    @PageQuery('page', DEFAULT_PAGE_QUERY.page)
+    page = DEFAULT_PAGE_QUERY.page,
+    @PageQuery('pageSize', DEFAULT_PAGE_QUERY.pageSize)
+    pageSize = DEFAULT_PAGE_QUERY.pageSize
   ) {
     return this.actorService.find({
       page,
@@ -83,7 +94,7 @@ export class ActorController {
   bind(
     @Query('actorId', parseIntPipe)
     actorId: number,
-    @Query('tagIds', parseIntArrarPipe) tagIds: number[],
+    @Query('tagIds', parseIntArrarPipe) tagIds: number[]
   ) {
     return this.actorService.addTag(actorId, tagIds);
   }
@@ -94,7 +105,7 @@ export class ActorController {
   unbind(
     @Query('actorId', parseIntPipe)
     actorId: number,
-    @Query('tagIds', parseIntArrarPipe) tagIds: number[],
+    @Query('tagIds', parseIntArrarPipe) tagIds: number[]
   ) {
     return this.actorService.removeTag(actorId, tagIds);
   }

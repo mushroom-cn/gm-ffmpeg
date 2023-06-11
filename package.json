@@ -6,7 +6,8 @@
   "private": false,
   "license": "MIT",
   "homepage": "https://github.com/mushroom-cn/gm-ffmpeg",
-  "url" : "https://github.com/mushroom-cn/gm-ffmpeg/issues",
+  "url": "https://github.com/mushroom-cn/gm-ffmpeg/issues",
+  "main": "dist/main.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/mushroom-cn/gm-ffmpeg.git"
@@ -24,12 +25,16 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "doc": "compodoc -p tsconfig.json -s"
+    "doc": "compodoc -c .compodocrc.json",
+    "prepare": "husky install"
   },
   "dependencies": {
+    "@fastify/compress": "^6.4.0",
+    "@fastify/static": "^6.10.2",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/platform-fastify": "^9.4.2",
     "@nestjs/schedule": "^2.2.3",
     "@nestjs/serve-static": "^3.0.1",
     "@nestjs/swagger": "^6.3.0",
@@ -41,6 +46,7 @@
     "app-root-path": "^3.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "compression": "^1.7.4",
     "cron": "^2.3.0",
     "dayjs": "^1.11.7",
     "fluent-ffmpeg": "^2.1.2",
@@ -51,6 +57,7 @@
     "rxjs": "^7.2.0",
     "sqlite3": "^5.1.6",
     "typeorm": "^0.3.15",
+    "uuidv4": "^6.2.13",
     "winston": "^3.8.2"
   },
   "devDependencies": {
@@ -59,6 +66,7 @@
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",
+    "@types/compression": "^1.7.2",
     "@types/cron": "^2.0.1",
     "@types/express": "^4.17.13",
     "@types/fluent-ffmpeg": "^2.1.21",
@@ -66,12 +74,16 @@
     "@types/node": "18.15.11",
     "@types/node-media-server": "^2.3.4",
     "@types/supertest": "^2.0.11",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
     "eslint": "^8.0.1",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-json-format": "^2.0.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
+    "husky": "^8.0.0",
     "jest": "29.5.0",
+    "lint-staged": "^13.2.2",
     "prettier": "^2.3.2",
     "source-map-support": "^0.5.20",
     "supertest": "^6.1.3",
@@ -80,5 +92,8 @@
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.2.0",
     "typescript": "^4.7.4"
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": "eslint -c .eslintrc.js  --fix"
   }
 }

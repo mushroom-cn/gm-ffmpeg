@@ -1,3 +1,4 @@
+import { BooleanQuery, DEFAULT_PAGE_QUERY, PageQuery } from '@common';
 import {
   Body,
   Controller,
@@ -37,11 +38,17 @@ export class TagController {
     return this.tagService.update(tag);
   }
 
-  @Delete('/:id')
-  @Header('Cache-Control', 'none')
+  @Delete()
   @ApiQuery({ type: Number, name: 'id' })
-  delete(@Query('id') id: number) {
-    return this.tagService.delete([id]);
+  @ApiQuery({ type: Boolean, required: false, name: 'force' })
+  delete(
+    @Query('id') id: number,
+    @BooleanQuery('force', false) force: boolean
+  ) {
+    if (force) {
+      return this.tagService.delete([id]);
+    }
+    return this.tagService.softDelete([id]);
   }
 
   @Get('/list')
@@ -58,7 +65,11 @@ export class TagController {
     allowEmptyValue: true,
   })
   @ApiResponse({})
-  list(@Query('page') page: number, @Query('pageSize') pageSize: number) {
+  list(
+    @PageQuery('page', DEFAULT_PAGE_QUERY.page) page: number,
+    @PageQuery('pageSize', DEFAULT_PAGE_QUERY.pageSize)
+    pageSize: number
+  ) {
     // 返回索引列表
     return this.tagService.find({ page, pageSize });
   }
