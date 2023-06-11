@@ -5,6 +5,12 @@
   "author": "",
   "private": true,
   "license": "MIT",
+  "homepage": "https://github.com/mushroom-cn/gm-ffmpeg",
+  "url" : "https://github.com/mushroom-cn/gm-ffmpeg/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mushroom-cn/gm-ffmpeg.git"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
