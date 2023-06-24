@@ -48,6 +48,7 @@
     "class-validator": "^0.14.0",
     "compression": "^1.7.4",
     "cron": "^2.3.0",
+    "cross-env": "^7.0.3",
     "dayjs": "^1.11.7",
     "fluent-ffmpeg": "^2.1.2",
     "json5": "^2.2.3",
