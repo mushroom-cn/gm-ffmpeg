@@ -1,6 +1,6 @@
 import { IConverter, Setting } from '@base';
 import { Injectable } from '@nestjs/common';
-import { SettingDto } from './dto/SettingDTO';
+import { SettingDto } from './dto';
 @Injectable()
 export class SettingConverter implements IConverter<SettingDto, Setting> {
   toDto = (medias: Setting[] = []) => {
