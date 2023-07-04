@@ -1,14 +1,7 @@
 import { SettingService } from '@base';
 import { logger, runSchedule } from '@common';
 import { Inject, Injectable } from '@nestjs/common';
-import {
-  existsSync,
-  mkdirSync,
-  readdir,
-  readdirSync,
-  statSync,
-  unlink,
-} from 'fs';
+import { existsSync, mkdirSync, readdirSync, statSync, unlink } from 'fs';
 import { parse as jsonParse } from 'json5';
 import { groupBy } from 'lodash';
 import path, { basename, extname, join, parse } from 'path';
@@ -20,6 +13,7 @@ import { pushHlsStream, queryMetaAsync, screentshotAsync } from './ffmpeg';
 import { ISetting, RESOURCE_ID } from './interface';
 import { MediaService } from './media.service';
 import { getStaticRoot } from './media.static';
+const STATIC_ROOT = getStaticRoot();
 @Injectable()
 export class FileScanner {
   private isRunning = false;
@@ -80,25 +74,47 @@ export class FileScanner {
     }
   };
 
-  rm = (path: string) => {
-    readdir(getStaticRoot(), (error, files) => {
-      if (error) {
-        logger.error(error);
-        return;
-      }
-      files
-        .map((filename) => join(getStaticRoot(), filename))
-        .forEach((file) => {
-          if (file.indexOf(path) > -1) {
-            logger.log(`delete file from ${file}`);
-            unlink(file, (e) => {
-              if (e) {
-                logger.error(e);
-              }
-            });
+  rm = (path: string, exts: string[] = []) => {
+    const extMap = Object.fromEntries(exts.map((v) => [v, v]));
+    const files = readdirSync(getStaticRoot());
+    files
+      .map((filename) => join(getStaticRoot(), filename))
+      .filter(
+        (file) =>
+          file.indexOf(path) > -1 && (!exts.length || extMap[extname(file)])
+      )
+      .forEach((file) => {
+        logger.log(`delete file from ${file}`);
+        unlink(file, (e) => {
+          if (e) {
+            logger.error(e);
           }
         });
+      });
+  };
+
+  toScreenshot = async (entity: MediaDto, timestamp?: string) => {
+    this.rm(entity.target, ['.png']);
+    await screentshotAsync([
+      {
+        path: entity.path,
+        folder: STATIC_ROOT,
+        filename: entity.target,
+        timestamp,
+      },
+    ]);
+    entity.status = MediaStatus.Creating;
+    await this.mediaService.update(entity);
+  };
+
+  toM3u8 = async (entity: MediaDto) => {
+    this.rm(entity.target, ['.m3u8', '.ts']);
+    await pushHlsStream({
+      path: entity.path,
+      serverUrl: join(STATIC_ROOT, entity.target),
     });
+    entity.status = MediaStatus.Done;
+    await this.mediaService.update(entity);
   };
 
   resove = async (mediaPath: string) => {
@@ -124,17 +140,7 @@ export class FileScanner {
       const entity = (
         !existed?.length ? await this.mediaService.create([dto]) : existed
       )[0];
-      await screentshotAsync([
-        { path: mediaPath, folder: target, filename: id },
-      ]);
-      entity.status = MediaStatus.Creating;
-      await this.mediaService.update(entity);
-      await pushHlsStream({
-        path: mediaPath,
-        serverUrl: fileTarget,
-      });
-      entity.status = MediaStatus.Done;
-      await this.mediaService.update(entity);
+      await this.toScreenshot(entity);
     } catch (error) {
       logger.error(error);
     }

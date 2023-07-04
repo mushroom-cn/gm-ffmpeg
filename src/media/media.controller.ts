@@ -116,9 +116,28 @@ export class MediaController {
     });
   }
 
-  @Get('/reindex')
+  @Get('/rescann')
+  @ApiQuery({ name: 'id', type: Number, required: true })
+  @ApiQuery({ name: 'time', type: String, required: false })
   @ApiOkResponse({ type: [MediaDto], isArray: true })
-  reindex() {
+  async rescann(
+    @Query('id', parseIntPipe) id: number,
+    @Query('time') time: string
+  ) {
+    const [entities] = await this.mediaService.findById({ ids: [id] });
+    const entity = entities?.[0];
+    if (!entity) {
+      return;
+    }
+    if (time) {
+      this.fileScanner.toScreenshot(entity, time);
+    }
+    this.fileScanner.toM3u8(entity);
+  }
+
+  @Get('/scann')
+  @ApiOkResponse({ type: [MediaDto], isArray: true })
+  async scann() {
     this.fileScanner.scann();
   }
 
