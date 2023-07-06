@@ -59,7 +59,7 @@ export class MediaController {
   }
 
   @Delete()
-  @ApiQuery({ type: Number, name: 'ids' })
+  @ApiQuery({ type: Number, name: 'ids', isArray: true })
   @ApiQuery({ type: Boolean, required: false, name: 'force' })
   async delete(
     @Query('ids', parseIntArrarPipe) id: number[],
