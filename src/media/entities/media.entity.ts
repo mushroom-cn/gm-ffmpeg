@@ -4,8 +4,8 @@ import { Actor } from './actor.entity';
 import { Tag } from './tag.entity';
 
 export enum MediaStatus {
-  Loading = '0',
-  Creating = '20',
+  Created = '0',
+  Processing = '20',
   Done = '100',
 }
 @Entity({ name: 'Media' })

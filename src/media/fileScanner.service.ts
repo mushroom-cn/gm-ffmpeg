@@ -95,6 +95,8 @@ export class FileScanner {
 
   toScreenshot = async (entity: MediaDto, timestamp?: string) => {
     this.rm(entity.target, ['.png']);
+    entity.status = MediaStatus.Processing;
+    await this.mediaService.update(entity);
     await screentshotAsync([
       {
         path: entity.path,
@@ -103,12 +105,14 @@ export class FileScanner {
         timestamp,
       },
     ]);
-    entity.status = MediaStatus.Creating;
+    entity.status = MediaStatus.Done;
     await this.mediaService.update(entity);
   };
 
   toM3u8 = async (entity: MediaDto) => {
     this.rm(entity.target, ['.m3u8', '.ts']);
+    entity.status = MediaStatus.Processing;
+    await this.mediaService.update(entity);
     await pushHlsStream({
       path: entity.path,
       serverUrl: join(STATIC_ROOT, entity.target),
@@ -132,7 +136,7 @@ export class FileScanner {
     dto.path = mediaPath;
     dto.mediaType = format_name;
     dto.target = id;
-    dto.status = MediaStatus.Loading;
+    dto.status = MediaStatus.Created;
     try {
       const [existed] = await this.mediaService.find({
         where: { path: In([mediaPath]) },
