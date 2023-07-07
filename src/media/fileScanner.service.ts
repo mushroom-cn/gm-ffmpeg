@@ -68,7 +68,16 @@ export class FileScanner {
         logger.log('No media found.', FileScanner.name);
         return;
       }
-      await Promise.allSettled(newMedias.map(this.resove));
+      await newMedias.reduce(async (res, v) => {
+        try {
+          await res;
+        } catch (e) {
+          logger.error(e);
+        }
+        return this.resove(v);
+      }, Promise.resolve());
+    } catch (e) {
+      logger.error(e);
     } finally {
       this.isRunning = false;
     }
